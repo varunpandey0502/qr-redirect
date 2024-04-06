@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Redirect Middleware
 
-## Getting Started
+This project uses a [Next.js middleware](https://nextjs.org/docs/app/building-your-application/routing/redirecting#nextresponseredirect-in-middleware) to handle redirects based on a JSON file.
 
-First, run the development server:
+## Adding Redirects
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The redirects are defined in the [`redirectData.json`](./redirectData.json) file.
+
+To add a new redirect, you need to modify the `redirectData.json` file. This file contains a JSON object where each key is a path to redirect from, and each value is another object with a `destination` property.
+
+Here's an example of what this file might look like:
+
+```json
+{
+  "/id/1": {
+    "destination": "https://www.floridabeautylabs.com/"
+  }
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How the Middleware Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The middleware function is defined in the [`middleware.ts`](./middleware.ts) file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The `middleware.ts` file contains a Next.js middleware function that handles the redirects.
 
-## Learn More
+When a request is made to the server, this function is called before the request is completed. It checks if the path of the request matches any of the keys in the `redirectData.json` file. If it finds a match, it redirects the request to the corresponding destination URL. If it doesn't find a match, it allows the request to continue without redirecting.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The redirect is performed using the `NextResponse.redirect` method, which sends a HTTP 301 status code (permanent redirect) along with the destination URL in the `Location` header of the response.
